@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>星盤自我探索工具</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+    color: #2c2c2a;
+    margin: 0;
+    padding: 32px 24px;
+    line-height: 1.7;
+    min-height: 100vh;
+    background-color: #1c1733;
+    background-image:
+      radial-gradient(circle at 8% 12%, rgba(255,255,255,0.9) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 22% 38%, rgba(255,255,255,0.65) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 45% 8%, rgba(255,255,255,0.8) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 68% 22%, rgba(255,255,255,0.6) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 85% 15%, rgba(255,255,255,0.9) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 14% 60%, rgba(255,255,255,0.5) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 92% 52%, rgba(255,255,255,0.65) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 38% 78%, rgba(255,255,255,0.45) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 60% 92%, rgba(255,255,255,0.45) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 78% 72%, rgba(255,255,255,0.4) 0 1px, transparent 1.5px),
+      linear-gradient(165deg, #100c24 0%, #241b42 35%, #3b2d5e 65%, #5a4373 100%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    background:
+      linear-gradient(90deg, #6b5fc4 0%, #c9a876 100%) top / 100% 6px no-repeat,
+      #fbf8f2;
+    padding: 38px 40px 32px;
+    border-radius: 12px;
+    box-shadow: 0 24px 60px -24px rgba(30, 20, 50, 0.55);
+  }
+  h1 {
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: #5f5e5a;
+    margin: 0 0 24px;
+  }
+  .controls {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f1efe8;
+    border-radius: 8px;
+  }
+  .controls label {
+    font-size: 13px;
+    color: #5f5e5a;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .controls input[type="text"],
+  .controls input[type="date"] {
+    font-size: 14px;
+    padding: 6px 10px;
+    border: 1px solid #b4b2a9;
+    border-radius: 6px;
+  }
+  .controls button {
+    font-size: 14px;
+    padding: 7px 16px;
+    border: 1px solid #5f5e5a;
+    border-radius: 6px;
+    background: #ffffff;
+    cursor: pointer;
+  }
+  .controls button:hover { background: #f1efe8; }
+  .print-btn {
+    margin-left: auto;
+    background: #2c2c2a !important;
+    color: #ffffff !important;
+    border-color: #2c2c2a !important;
+  }
+
+  /* Cover page */
+  .cover {
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    break-after: page;
+  }
+  .cover .mark {
+    margin-bottom: 8px;
+    line-height: 0;
+  }
+  .cover h1 { font-size: 28px; margin-bottom: 8px; }
+  .cover .subtitle { margin-bottom: 48px; }
+  .cover-field {
+    width: 320px;
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  .cover-field .field-label {
+    font-size: 12px;
+    color: #888780;
+    margin: 0 0 4px;
+  }
+  .cover-field .field-line {
+    font-size: 16px;
+    font-weight: 500;
+    border-bottom: 1px solid #b4b2a9;
+    min-height: 28px;
+    padding-bottom: 4px;
+  }
+
+  .name-line {
+    border-bottom: 1px solid #b4b2a9;
+    padding: 4px 0 8px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: #5f5e5a;
+  }
+  .name-line span { color: #2c2c2a; font-weight: 500; }
+
+  .section-title {
+    font-family: "Noto Serif TC", "Songti TC", serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 28px 0 12px;
+    border-left: 4px solid #534ab7;
+    padding-left: 10px;
+  }
+  .section-hint {
+    font-size: 12px;
+    color: #888780;
+    margin: -8px 0 12px 14px;
+  }
+
+  .intro-box {
+    background: #f1efe8;
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .intro-box p { margin: 0 0 8px; }
+  .intro-box p:last-child { margin-bottom: 0; }
+  .intro-box .lead { font-weight: 600; font-size: 14px; }
+
+  .wheel-wrap { text-align: center; margin-bottom: 8px; }
+  svg { max-width: 420px; width: 100%; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    font-size: 12px;
+    color: #5f5e5a;
+    margin-bottom: 24px;
+  }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .legend .swatch { display: inline-block; width: 14px; height: 2px; }
+
+  /* Element distribution */
+  .element-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 40px;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .element-track {
+    background: #f1efe8;
+    border-radius: 6px;
+    height: 14px;
+    overflow: hidden;
+  }
+  .element-fill {
+    height: 100%;
+    border-radius: 6px;
+  }
+  .element-summary {
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .planet-block {
+    border: 1px solid #d3d1c7;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    break-inside: avoid;
+  }
+  .planet-block .head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .planet-block .glyph {
+    font-size: 18px;
+    color: #534ab7;
+  }
+  .planet-block .title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .planet-block .position {
+    font-size: 12px;
+    color: #5f5e5a;
+    margin-left: auto;
+  }
+  .planet-block .desc {
+    font-size: 13px;
+    margin: 0 0 8px;
+  }
+  .planet-block .question {
+    font-size: 12px;
+    color: #534ab7;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .aspect-block {
+    border-left: 3px solid #d3d1c7;
+    padding: 6px 0 6px 12px;
+    margin-bottom: 10px;
+    break-inside: avoid;
+  }
+  .aspect-block .head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .aspect-block .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .aspect-block .desc { font-size: 12px; color: #5f5e5a; margin: 0 0 4px; }
+  .aspect-block .question { font-size: 12px; color: #534ab7; font-weight: 500; margin: 0; }
+
+  .house-block {
+    border: 1px solid #d3d1c7;
+    border-radius: 8px;
+    padding: 10px 12px;
+    break-inside: avoid;
+  }
+  .house-block .label { font-size: 11px; color: #5f5e5a; margin: 0; }
+  .house-block .title { font-size: 13px; font-weight: 600; margin: 4px 0 6px; }
+  .house-block ul { margin: 0; padding-left: 16px; font-size: 11px; color: #5f5e5a; }
+  .house-block li { margin-bottom: 2px; }
+
+  .houses-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  /* Summary page */
+  .summary-block {
+    margin-bottom: 18px;
+    break-inside: avoid;
+  }
+  .summary-block .label {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+  .pick-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 6px;
+    font-size: 12px;
+  }
+  .pick-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .pick-item .circle {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #b4b2a9;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+
+  .reflection-box {
+    border: 1px solid #b4b2a9;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 8px;
+    break-inside: avoid;
+  }
+  .reflection-box p { font-size: 13px; margin: 0 0 6px; color: #5f5e5a; }
+  .write-lines {
+    border-bottom: 1px solid #d3d1c7;
+    height: 22px;
+  }
+
+  .footnote {
+    font-size: 11px;
+    color: #888780;
+    margin-top: 32px;
+    line-height: 1.7;
+  }
+
+  .page-break { break-before: page; }
+
+  @media print {
+    @page { margin: 15mm; }
+    body { background: #ffffff; padding: 0; }
+    .page {
+      box-shadow: none;
+      max-width: 100%;
+      border-radius: 0;
+      padding: 18px 0 0;
+      background:
+        linear-gradient(90deg, #6b5fc4 0%, #c9a876 100%) top / 100% 4px no-repeat,
+        #ffffff;
+    }
+    .controls { display: none; }
+    .cover { min-height: 90vh; }
+    .card, .reflection-box, .planet-block, .house-block, .intro-box, .aspect-block { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section-title { break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="controls">
+    <div>
+      <label for="bdate">出生日期</label>
+      <input type="date" id="bdate" value="1990-01-01">
+    </div>
+    <div>
+      <label for="uname">姓名 / 暱稱（選填）</label>
+      <input type="text" id="uname" placeholder="顯示於封面">
+    </div>
+    <div>
+      <label for="gname">團體名稱（選填）</label>
+      <input type="text" id="gname" placeholder="顯示於封面">
+    </div>
+    <div>
+      <label for="sdate">進行日期（選填）</label>
+      <input type="date" id="sdate">
+    </div>
+    <button id="calcBtn">產生星盤</button>
+    <button class="print-btn" id="printBtn">列印 / 存成 PDF</button>
+  </div>
+
+  <!-- Cover page -->
+  <div class="cover">
+    <div class="mark">
+      <svg viewBox="0 0 200 200" width="120" height="120" role="img" aria-label="星環裝飾圖案">
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#c9a876" stroke-width="0.75" stroke-dasharray="1 7"/>
+        <circle cx="100" cy="100" r="68" fill="none" stroke="#534ab7" stroke-width="0.5" opacity="0.35"/>
+        <circle cx="100" cy="15" r="2.4" fill="#c9a876"/>
+        <circle cx="142.5" cy="26.4" r="1.6" fill="#534ab7" opacity="0.6"/>
+        <circle cx="173.6" cy="57.5" r="2" fill="#c9a876"/>
+        <circle cx="185" cy="100" r="1.6" fill="#534ab7" opacity="0.6"/>
+        <circle cx="173.6" cy="142.5" r="2.4" fill="#c9a876"/>
+        <circle cx="142.5" cy="173.6" r="1.6" fill="#534ab7" opacity="0.6"/>
+        <circle cx="100" cy="185" r="2" fill="#c9a876"/>
+        <circle cx="57.5" cy="173.6" r="1.6" fill="#534ab7" opacity="0.6"/>
+        <circle cx="26.4" cy="142.5" r="2.4" fill="#c9a876"/>
+        <circle cx="15" cy="100" r="1.6" fill="#534ab7" opacity="0.6"/>
+        <circle cx="26.4" cy="57.5" r="2" fill="#c9a876"/>
+        <circle cx="57.5" cy="26.4" r="1.6" fill="#534ab7" opacity="0.6"/>
+        <text x="100" y="103" text-anchor="middle" dominant-baseline="central" font-size="40" fill="#534ab7">&#9737;</text>
+      </svg>
+    </div>
+    <h1>星盤自我探索</h1>
+    <p class="subtitle">Astrology Self-Exploration Chart</p>
+    <div class="cover-field">
+      <p class="field-label">姓名 / 暱稱</p>
+      <p class="field-line" id="coverName">&nbsp;</p>
+    </div>
+    <div class="cover-field">
+      <p class="field-label">出生日期</p>
+      <p class="field-line" id="coverBirth">&nbsp;</p>
+    </div>
+    <div class="cover-field">
+      <p class="field-label">團體 / 場次</p>
+      <p class="field-line" id="coverGroup">&nbsp;</p>
+    </div>
+    <div class="cover-field">
+      <p class="field-label">進行日期</p>
+      <p class="field-line" id="coverSession">&nbsp;</p>
+    </div>
+  </div>
+
+  <div class="section-title">如何使用這份星盤</div>
+  <div class="intro-box">
+    <p class="lead">這不是命運預測，而是一面鏡子。</p>
+    <p>星盤上的行星與星座，是用來描述「人的內在有哪些不同面向、各自如何展現」的一套語言。你可以把接下來的每一段文字，當作一個「假設」或「提問」，而不是貼在你身上的標籤。</p>
+    <p>閱讀時，請帶著好奇心問自己：「這個描述，符合我嗎？」「如果不符合，那我實際的樣子是什麼？」「這讓我想到自己生活中的哪些經驗？」</p>
+    <p>建議閱讀順序：先看星盤圖與元素分布，感受整體印象 → 再逐一閱讀行星描述，圈出最有共鳴的幾個 → 接著看相位連線，思考內在的拉扯與資源 → 最後參考十二宮位的提問，作為延伸思考 → 在「綜合摘要」頁整理你的發現。</p>
+  </div>
+
+  <div class="name-line" id="nameLine"></div>
+
+  <div class="section-title">星盤圖</div>
+  <div class="wheel-wrap">
+    <svg id="wheel" viewBox="0 0 500 500" role="img">
+      <title>星盤示意圖</title>
+      <desc>顯示十二星座環、十大行星位置與行星間相位連線的簡化星盤</desc>
+      <circle cx="250" cy="250" r="220" fill="none" stroke="#d3d1c7" stroke-width="1"/>
+      <circle cx="250" cy="250" r="170" fill="none" stroke="#d3d1c7" stroke-width="1"/>
+      <g id="spokes"></g>
+      <g id="zodiacLabels"></g>
+      <g id="aspectLines"></g>
+      <g id="planetGlyphs"></g>
+    </svg>
+  </div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="section-title">元素分布</div>
+  <p class="section-hint">十二星座可分為火、土、風、水四種元素，代表不同的能量傾向。比例不代表好壞，只是一種整體印象。</p>
+  <div id="elementChart"></div>
+  <p class="element-summary" id="elementSummary"></p>
+
+  <div class="section-title page-break">行星位置與自我探索</div>
+  <p class="section-hint">每個行星代表你的某個內在面向，星座則是這個面向「展現的方式」。請帶著好奇心閱讀，而非對號入座的標準答案。</p>
+  <div id="planetBlocks"></div>
+
+  <div class="section-title page-break">行星相位與內在動力</div>
+  <p class="section-hint">相位描述的是兩個內在面向之間的關係——是融合、互補，還是拉扯。以下列出星盤中最主要的幾組。</p>
+  <div id="aspectBlocks"></div>
+
+  <div class="section-title page-break">十二宮位 · 自我探索主題</div>
+  <p class="section-hint">十二宮位對應人生的不同領域，可作為結構化的自我檢視清單。</p>
+  <div class="grid houses-grid" id="houseGrid"></div>
+
+  <div class="section-title page-break">綜合摘要</div>
+  <p class="section-hint">回顧前面的內容，圈選出對你來說最有意義的部分，作為團體分享時的聚焦重點。</p>
+
+  <div class="summary-block">
+    <p class="label">從十個行星描述中，圈出 2-3 個最有共鳴的：</p>
+    <div class="pick-list" id="pickPlanets"></div>
+  </div>
+
+  <div class="summary-block">
+    <p class="label">從十二宮位中，圈出 2-3 個最想深入的：</p>
+    <div class="pick-list" id="pickHouses"></div>
+  </div>
+
+  <div class="summary-block">
+    <p class="label">從相位連線中，圈出 1 組最想探討的：</p>
+    <div class="pick-list" id="pickAspects"></div>
+  </div>
+
+  <div class="reflection-box">
+    <p>綜合以上，我目前最想花時間理解或調整的是：</p>
+    <div class="write-lines"></div>
+    <div class="write-lines"></div>
+    <div class="write-lines"></div>
+  </div>
+
+  <div class="section-title page-break">團體分享 / 個人筆記</div>
+  <div class="reflection-box">
+    <p>哪一個行星描述或宮位主題，最讓你有共鳴？為什麼？</p>
+    <div class="write-lines"></div>
+    <div class="write-lines"></div>
+    <div class="write-lines"></div>
+  </div>
+  <div class="reflection-box">
+    <p>哪一條相位連線，最像你生活中正在經歷的某種拉扯或合作？</p>
+    <div class="write-lines"></div>
+    <div class="write-lines"></div>
+    <div class="write-lines"></div>
+  </div>
+  <div class="reflection-box">
+    <p>看完這張星盤，你會想對自己說什麼？</p>
+    <div class="write-lines"></div>
+    <div class="write-lines"></div>
+    <div class="write-lines"></div>
+  </div>
+
+  <p class="footnote">
+    註：此星盤為簡化示意計算（行星位置以平均軌道近似求得，未使用精確天文星曆），且因未輸入出生時間與地點，宮位採用「自然宮位」對應方式呈現。所有文字描述皆為「行星主題」與「星座特質」的組合式引導語，目的為團體自我探索與討論的素材，非專業占星精算結果，請以開放、反思的態度閱讀。
+  </p>
+
+</div>
+
+<script>
+const ZODIAC = [
+  {name:'牡羊座', glyph:'\u2648', element:'fire', quality:'直接、有行動力、勇於開始新事物；但有時較難堅持到底，或容易因衝動而忽略後果'},
+  {name:'金牛座', glyph:'\u2649', element:'earth', quality:'穩定、務實、重視安全感與舒適；但有時過於固守習慣，較難接受改變'},
+  {name:'雙子座', glyph:'\u264A', element:'air', quality:'靈活、好奇、善於用語言表達與連結；但有時容易分心，難以深入投入一件事'},
+  {name:'巨蟹座', glyph:'\u264B', element:'water', quality:'敏感、重感情、需要歸屬感與被照顧；但有時容易過度保護自己，難以放下情緒'},
+  {name:'獅子座', glyph:'\u264C', element:'fire', quality:'自信、有熱情、渴望被看見與肯定；但有時過度需要關注，難以接受被忽略'},
+  {name:'處女座', glyph:'\u264D', element:'earth', quality:'細心、追求精確與完善、樂於提供協助；但有時對自己與他人過度挑剔'},
+  {name:'天秤座', glyph:'\u264E', element:'air', quality:'重視和諧、善於權衡多方觀點、在意他人感受；但有時因猶豫不決而難以做出選擇'},
+  {name:'天蠍座', glyph:'\u264F', element:'water', quality:'深刻、強烈、情感不輕易顯露於外；但有時容易陷入控制慾或難以放下的執著'},
+  {name:'射手座', glyph:'\u2650', element:'fire', quality:'樂觀、嚮往自由、追求更大的意義與視野；但有時容易誇大、缺乏耐心於細節'},
+  {name:'摩羯座', glyph:'\u2651', element:'earth', quality:'自律、有目標、責任感強、願意長期努力；但有時對自己過度嚴格，壓抑情感需求'},
+  {name:'水瓶座', glyph:'\u2652', element:'air', quality:'獨立、創新、重視理念與群體價值；但有時顯得疏離，難以親近私人情感'},
+  {name:'雙魚座', glyph:'\u2653', element:'water', quality:'富同理心、想像力豐富、容易感受他人情緒；但有時界線模糊，難以區分自己與他人的感受'}
+];
+
+const ELEMENTS = {
+  fire:  {name:'火象', color:'#D85A30', meaning:'行動力、熱情與直覺反應較為突出，能量傾向往外展現與主動出擊'},
+  earth: {name:'土象', color:'#639922', meaning:'務實、穩定與身體感受較為突出，重視具體、可掌握、可長期經營的事物'},
+  air:   {name:'風象', color:'#378ADD', meaning:'思考、溝通與人際連結較為突出，重視想法、觀點與資訊的流動'},
+  water: {name:'水象', color:'#1D9E75', meaning:'情感、直覺與內在感受較為突出，重視情緒流動、深層連結與同理'}
+};
+
+const PLANETS = [
+  {key:'sun', name:'太陽', glyph:'\u2609', theme:'核心自我、生命力，以及你想被世界看見的方式', question:'你通常透過什麼方式，讓別人看見「真正的你」？'},
+  {key:'moon', name:'月亮', glyph:'\u263D', theme:'情緒安全感、內在需求，以及你照顧自己的方式', question:'什麼情況下，你最需要被安慰或被理解？'},
+  {key:'mercury', name:'水星', glyph:'\u263F', theme:'思考方式、表達與學習風格', question:'你習慣用什麼方式理解新事物、表達自己的想法？'},
+  {key:'venus', name:'金星', glyph:'\u2640', theme:'愛與被愛的方式、審美與你重視的價值', question:'在關係裡，什麼讓你感到被愛、被珍惜？'},
+  {key:'mars', name:'火星', glyph:'\u2642', theme:'行動力、慾望，以及你面對衝突的方式', question:'當你生氣或想要爭取什麼時，通常會怎麼做？'},
+  {key:'jupiter', name:'木星', glyph:'\u2643', theme:'擴展、信念，以及你追求成長的方向', question:'什麼事情會讓你覺得「人生有意義」？'},
+  {key:'saturn', name:'土星', glyph:'\u2644', theme:'責任、限制，以及你需要扎根學習的課題', question:'有什麼是你常常對自己要求很高、甚至有點嚴苛的地方？'},
+  {key:'uranus', name:'天王星', glyph:'\u2645', theme:'突破慣性、追求自由與獨特性的方式', question:'在什麼情況下，你會渴望打破常規、做自己？'},
+  {key:'neptune', name:'海王星', glyph:'\u2646', theme:'理想、夢想，以及你容易模糊界線的領域', question:'什麼事情會讓你感覺「超越現實」、進入忘我的狀態？'},
+  {key:'pluto', name:'冥王星', glyph:'\u2647', theme:'深層轉化、執著，以及重生的議題', question:'你生命中曾經有什麼經驗，讓你「脫胎換骨」地改變？'}
+];
+
+const HOUSES = [
+  {n:1, sign:'牡羊座', title:'自我與形象', qs:['我如何呈現自己、展現存在感？','別人對我的第一印象，和我自己感覺到的「我」一樣嗎？','我需要多少「自己的空間」才會感到自在？']},
+  {n:2, sign:'金牛座', title:'價值與資源', qs:['什麼讓我感到安全與穩定？','我如何看待金錢、物質與自己擁有的東西？','我最珍惜自己身上的什麼特質或能力？']},
+  {n:3, sign:'雙子座', title:'溝通與學習', qs:['我如何表達自己、與人連結？','我習慣用什麼方式學習新事物？','在日常對話中，我比較常說，還是比較常聽？']},
+  {n:4, sign:'巨蟹座', title:'根基與情感', qs:['我的情感支持來自哪裡？','「家」對我來說意味著什麼？','原生家庭帶給我哪些至今仍影響我的模式？']},
+  {n:5, sign:'獅子座', title:'創造與展現', qs:['什麼讓我感到有活力、被看見？','我上一次全心投入做一件「為自己」的事，是什麼時候？','我如何表達自己的創意或熱情？']},
+  {n:6, sign:'處女座', title:'日常與照顧', qs:['我如何照顧自己與他人？','我的日常生活習慣，是支持還是消耗我的能量？','我對自己的標準，是鼓勵還是苛責？']},
+  {n:7, sign:'天秤座', title:'關係與互動', qs:['我在關係中通常扮演什麼角色？','我如何在「為自己」與「為對方」之間找到平衡？','什麼樣的關係讓我感到滋養，什麼樣的讓我感到耗竭？']},
+  {n:8, sign:'天蠍座', title:'轉化與深層', qs:['什麼議題讓我感到強烈或難以言說？','我曾經歷過哪些「結束」，又從中學到了什麼？','我如何面對失控或脆弱的感覺？']},
+  {n:9, sign:'射手座', title:'信念與成長', qs:['什麼賦予我生命的意義？','我對世界、對未來，抱持著什麼樣的信念？','我願意為了什麼樣的價值，踏出舒適圈？']},
+  {n:10, sign:'摩羯座', title:'目標與角色', qs:['我想被世界如何看見？','我對「成功」的定義是什麼？是誰給我的？','我如何在「做自己」與「符合期待」之間取得平衡？']},
+  {n:11, sign:'水瓶座', title:'社群與未來', qs:['我與群體、社會的關係如何？','我理想中的未來，會是什麼樣子？','我屬於哪些社群？這些連結滋養了我什麼？']},
+  {n:12, sign:'雙魚座', title:'潛意識與內在', qs:['有什麼是我還未完全覺察的部分？','我如何讓自己獨處、充電？','有沒有什麼感覺、夢境或直覺，最近反覆出現？']}
+];
+
+const ASPECTS = [
+  {name:'合相', angle:0, orb:8, color:'#D85A30', desc:'整合、強化', strength:4, dynamic:'兩種特質緊密融合，幾乎同時發生、互相強化。優點是力量集中、容易展現；挑戰是這兩種特質可能混在一起，較難分開覺察。'},
+  {name:'六分相', angle:60, orb:6, color:'#0F6E56', desc:'機會、支持', strength:1, dynamic:'兩種特質之間有自然的合作關係，像是一個能輕鬆支援另一個。這是相對容易運用、卻也容易被忽略的資源。'},
+  {name:'四分相', angle:90, orb:7, color:'#854F0B', desc:'挑戰、成長', strength:3, dynamic:'兩種特質之間存在內在張力與摩擦，常常需要透過行動或選擇來化解。這類組合往往是個人成長與突破的關鍵所在。'},
+  {name:'三分相', angle:120, orb:8, color:'#3B6D11', desc:'順暢、和諧', strength:2, dynamic:'兩種特質之間流動順暢、彼此呼應，是與生俱來就比較容易發揮的天賦組合，但也可能因為「太順」而較少被刻意開發。'},
+  {name:'對相', angle:180, orb:8, color:'#A32D2D', desc:'張力、平衡', strength:4, dynamic:'兩種特質像是天平的兩端，彼此拉扯、形成內在的兩極。成長的關鍵往往在於讓兩端對話、整合，而不是只選一邊。'}
+];
+
+const MAX_ASPECTS_SHOWN = 4;
+
+const cx = 250, cy = 250;
+
+function toXY(lonDeg, radius) {
+  const a = (lonDeg - 90) * Math.PI / 180;
+  return {x: cx + radius * Math.cos(a), y: cy + radius * Math.sin(a)};
+}
+
+function julianDate(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00Z');
+  return (d.getTime() / 86400000) + 2440587.5;
+}
+
+function calcLongitudes(dateStr) {
+  const JD = julianDate(dateStr);
+  const T = JD - 2451545.0;
+
+  const elems = {
+    mercury: {a:0.387, L0:252.25, n:4.09233},
+    venus:   {a:0.723, L0:181.98, n:1.60214},
+    earth:   {a:1.000, L0:100.46, n:0.98561},
+    mars:    {a:1.524, L0:355.43, n:0.52403},
+    jupiter: {a:5.203, L0:34.35,  n:0.08309},
+    saturn:  {a:9.537, L0:50.08,  n:0.03346},
+    uranus:  {a:19.19, L0:314.20, n:0.01173},
+    neptune: {a:30.07, L0:304.22, n:0.00599},
+    pluto:   {a:39.48, L0:238.93, n:0.00397}
+  };
+
+  function pos(p) {
+    const L = (p.L0 + p.n * T) * Math.PI / 180;
+    return {x: p.a * Math.cos(L), y: p.a * Math.sin(L)};
+  }
+
+  const earthPos = pos(elems.earth);
+  const earthL = ((elems.earth.L0 + elems.earth.n * T) % 360 + 360) % 360;
+
+  function geoLong(name) {
+    const pp = pos(elems[name]);
+    let lon = Math.atan2(pp.y - earthPos.y, pp.x - earthPos.x) * 180 / Math.PI;
+    return ((lon % 360) + 360) % 360;
+  }
+
+  const sunLon = ((earthL + 180) % 360 + 360) % 360;
+  const moonLon = ((218.316 + 13.176396 * T) % 360 + 360) % 360;
+
+  return {
+    sun: sunLon,
+    moon: moonLon,
+    mercury: geoLong('mercury'),
+    venus: geoLong('venus'),
+    mars: geoLong('mars'),
+    jupiter: geoLong('jupiter'),
+    saturn: geoLong('saturn'),
+    uranus: geoLong('uranus'),
+    neptune: geoLong('neptune'),
+    pluto: geoLong('pluto')
+  };
+}
+
+function angleDiff(a, b) {
+  let d = Math.abs(a - b) % 360;
+  if (d > 180) d = 360 - d;
+  return d;
+}
+
+function buildWheelBase() {
+  const spokes = document.getElementById('spokes');
+  const labels = document.getElementById('zodiacLabels');
+  let spokeSvg = '';
+  let labelSvg = '';
+  for (let i = 0; i < 12; i++) {
+    const boundary = i * 30;
+    const p1 = toXY(boundary, 170);
+    const p2 = toXY(boundary, 220);
+    spokeSvg += `<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="#d3d1c7" stroke-width="1"/>`;
+    const mid = boundary + 15;
+    const lp = toXY(mid, 197);
+    labelSvg += `<text x="${lp.x.toFixed(1)}" y="${lp.y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" fill="#5f5e5a" font-size="16">${ZODIAC[i].glyph}</text>`;
+  }
+  spokes.innerHTML = spokeSvg;
+  labels.innerHTML = labelSvg;
+}
+
+function buildLegend() {
+  const legend = document.getElementById('legend');
+  legend.innerHTML = ASPECTS.map(a =>
+    `<span><span class="swatch" style="background:${a.color};"></span>${a.name}（${a.desc}）</span>`
+  ).join('');
+}
+
+function buildHouses() {
+  const grid = document.getElementById('houseGrid');
+  grid.innerHTML = HOUSES.map(h => `
+    <div class="house-block">
+      <p class="label">第${h.n}宮 · ${h.sign}</p>
+      <p class="title">${h.title}</p>
+      <ul>${h.qs.map(q => `<li>${q}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+
+  document.getElementById('pickHouses').innerHTML = HOUSES.map(h =>
+    `<div class="pick-item"><span class="circle"></span><span>第${h.n}宮 ${h.title}</span></div>`
+  ).join('');
+}
+
+function buildPickPlanets(positions) {
+  document.getElementById('pickPlanets').innerHTML = positions.map(p =>
+    `<div class="pick-item"><span class="circle"></span><span>${p.glyph} ${p.name}在${p.sign.name}</span></div>`
+  ).join('');
+}
+
+function buildElementChart(positions) {
+  const counts = {fire:0, earth:0, air:0, water:0};
+  positions.forEach(p => counts[p.sign.element]++);
+
+  const order = ['fire','earth','air','water'];
+  const chart = document.getElementById('elementChart');
+  chart.innerHTML = order.map(key => {
+    const e = ELEMENTS[key];
+    const pct = (counts[key] / 10) * 100;
+    return `
+      <div class="element-row">
+        <span>${e.name}</span>
+        <span class="element-track"><span class="element-fill" style="width:${pct}%; background:${e.color};"></span></span>
+        <span>${counts[key]}/10</span>
+      </div>
+    `;
+  }).join('');
+
+  const sorted = order.slice().sort((a,b) => counts[b] - counts[a]);
+  const top = sorted[0];
+  const bottom = sorted[sorted.length - 1];
+  let summary = `在你的星盤中，${ELEMENTS[top].name}佔比最高（${counts[top]}/10），${ELEMENTS[top].meaning}。`;
+  if (counts[bottom] === 0) {
+    summary += `${ELEMENTS[bottom].name}在這十個行星中沒有出現，這可能是你較少自然展現、但仍可以練習培養的部分——${ELEMENTS[bottom].meaning}。`;
+  } else if (counts[bottom] < counts[top]) {
+    summary += `${ELEMENTS[bottom].name}相對較少出現（${counts[bottom]}/10），可以留意這個面向是否是你較少使用、但其實擁有的資源——${ELEMENTS[bottom].meaning}。`;
+  }
+  document.getElementById('elementSummary').textContent = summary;
+}
+
+function render(dateStr) {
+  const lon = calcLongitudes(dateStr);
+
+  const positions = PLANETS.map((p, i) => ({
+    ...p,
+    lon: lon[p.key],
+    sign: ZODIAC[Math.floor(lon[p.key] / 30)],
+    deg: Math.round(lon[p.key] % 30),
+    radius: 100 + (i % 3) * 22
+  }));
+
+  let glyphSvg = '';
+  positions.forEach(p => {
+    const pos = toXY(p.lon, p.radius);
+    glyphSvg += `<g><circle cx="${pos.x.toFixed(1)}" cy="${pos.y.toFixed(1)}" r="11" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/><text x="${pos.x.toFixed(1)}" y="${pos.y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="13" fill="#26215C">${p.glyph}</text></g>`;
+  });
+  document.getElementById('planetGlyphs').innerHTML = glyphSvg;
+
+  let aspectSvg = '';
+  const allAspects = [];
+  for (let i = 0; i < positions.length; i++) {
+    for (let j = i + 1; j < positions.length; j++) {
+      const d = angleDiff(positions[i].lon, positions[j].lon);
+      for (const asp of ASPECTS) {
+        const diff = Math.abs(d - asp.angle);
+        if (diff <= asp.orb) {
+          const score = asp.strength - (diff / asp.orb) * 0.9;
+          allAspects.push({a: positions[i], b: positions[j], asp, score});
+          break;
+        }
+      }
+    }
+  }
+  allAspects.sort((x, y) => y.score - x.score);
+  const shown = allAspects.slice(0, MAX_ASPECTS_SHOWN);
+
+  shown.forEach(({a, b, asp}) => {
+    const p1 = toXY(a.lon, a.radius);
+    const p2 = toXY(b.lon, b.radius);
+    aspectSvg += `<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="${asp.color}" stroke-width="1" opacity="0.7"/>`;
+  });
+  document.getElementById('aspectLines').innerHTML = aspectSvg;
+
+  document.getElementById('planetBlocks').innerHTML = positions.map(p => `
+    <div class="planet-block">
+      <div class="head">
+        <span class="glyph">${p.glyph}</span>
+        <span class="title">${p.name}在${p.sign.glyph}${p.sign.name}</span>
+        <span class="position">${p.deg}°</span>
+      </div>
+      <p class="desc">「${p.theme}」這個部分，常見的傾向是：${p.sign.quality}。這樣的描述符合你嗎？或者，你發現自己其實展現得不太一樣？</p>
+      <p class="question">想一想：${p.question}</p>
+    </div>
+  `).join('');
+
+  let aspectHtml;
+  if (shown.length) {
+    aspectHtml = shown.map(({a, b, asp}) => `
+      <div class="aspect-block" style="border-left-color:${asp.color};">
+        <div class="head"><span class="dot" style="background:${asp.color};"></span>${a.glyph} ${a.name} ${asp.name} ${b.glyph} ${b.name}</div>
+        <p class="desc">${asp.dynamic}</p>
+        <p class="question">想一想：在你身上，「${a.theme}」與「${b.theme}」這兩個部分，是怎麼互動的？</p>
+      </div>
+    `).join('');
+    if (allAspects.length > MAX_ASPECTS_SHOWN) {
+      aspectHtml += `<p style="font-size:12px; color:#888780;">（星盤中共偵測到 ${allAspects.length} 組相位，此處列出最主要的 ${MAX_ASPECTS_SHOWN} 組）</p>`;
+    }
+  } else {
+    aspectHtml = '<p style="color:#888780; font-size:13px;">此次計算範圍內未檢出明顯相位。</p>';
+  }
+  document.getElementById('aspectBlocks').innerHTML = aspectHtml;
+
+  document.getElementById('pickAspects').innerHTML = shown.length
+    ? shown.map(({a, b, asp}) =>
+        `<div class="pick-item"><span class="circle"></span><span>${a.glyph}${a.name} ${asp.name} ${b.glyph}${b.name}</span></div>`
+      ).join('')
+    : '<p style="color:#888780; font-size:12px;">（無相位可選）</p>';
+
+  buildElementChart(positions);
+  buildPickPlanets(positions);
+
+  const name = document.getElementById('uname').value.trim();
+  const gname = document.getElementById('gname').value.trim();
+  const sdate = document.getElementById('sdate').value;
+  const dateLabel = new Date(dateStr + 'T12:00:00Z').toLocaleDateString('zh-TW', {year:'numeric', month:'long', day:'numeric'});
+
+  document.getElementById('nameLine').innerHTML = (name ? `<span>${name}</span> ・ ` : '') + `出生日期：<span>${dateLabel}</span>`;
+
+  document.getElementById('coverName').innerHTML = name || '&nbsp;';
+  document.getElementById('coverBirth').innerHTML = dateLabel;
+  document.getElementById('coverGroup').innerHTML = gname || '&nbsp;';
+  document.getElementById('coverSession').innerHTML = sdate ? new Date(sdate + 'T12:00:00Z').toLocaleDateString('zh-TW', {year:'numeric', month:'long', day:'numeric'}) : '&nbsp;';
+}
+
+buildWheelBase();
+buildLegend();
+buildHouses();
+render(document.getElementById('bdate').value);
+
+document.getElementById('calcBtn').addEventListener('click', () => {
+  const val = document.getElementById('bdate').value;
+  if (val) render(val);
+});
+
+document.getElementById('printBtn').addEventListener('click', () => {
+  window.print();
+});
+</script>
+</body>
+</html>
