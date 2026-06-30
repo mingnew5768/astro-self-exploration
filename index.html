@@ -428,7 +428,7 @@
       <label for="btimeMode">出生時間</label>
       <select id="btimeMode">
         <option value="known">知道精確時間</option>
-        <option value="period">只知道大概時段</option>
+        <option value="period">只知道時辰（子丑寅卯…）</option>
         <option value="unknown">不確定 / 跳過</option>
       </select>
     </div>
@@ -440,14 +440,20 @@
       </div>
     </div>
     <div id="btimePeriodWrap" style="display:none;">
-      <label for="bperiod">大概時段</label>
+      <label for="bperiod">出生時辰</label>
       <select id="bperiod">
-        <option value="6">清晨（約6點）</option>
-        <option value="9">上午（約9點）</option>
-        <option value="13" selected>下午（約13點）</option>
-        <option value="18">傍晚（約18點）</option>
-        <option value="21">晚上（約21點）</option>
-        <option value="0">深夜（約0點）</option>
+        <option value="0">子時（23:00-01:00）</option>
+        <option value="2">丑時（01:00-03:00）</option>
+        <option value="4">寅時（03:00-05:00）</option>
+        <option value="6">卯時（05:00-07:00）</option>
+        <option value="8">辰時（07:00-09:00）</option>
+        <option value="10">巳時（09:00-11:00）</option>
+        <option value="12">午時（11:00-13:00）</option>
+        <option value="14" selected>未時（13:00-15:00）</option>
+        <option value="16">申時（15:00-17:00）</option>
+        <option value="18">酉時（17:00-19:00）</option>
+        <option value="20">戌時（19:00-21:00）</option>
+        <option value="22">亥時（21:00-23:00）</option>
       </select>
     </div>
     <div>
@@ -697,9 +703,16 @@ const CITIES = [
   { name: '釜山', country: '韓國', lat: 35.1796, lon: 129.0756, tz: 9 },
   { name: '新加坡', country: '新加坡', lat: 1.3521, lon: 103.8198, tz: 8 },
   { name: '吉隆坡', country: '馬來西亞', lat: 3.1390, lon: 101.6869, tz: 8 },
+  { name: '檳城', country: '馬來西亞', lat: 5.4141, lon: 100.3288, tz: 8 },
+  { name: '新山', country: '馬來西亞', lat: 1.4927, lon: 103.7414, tz: 8 },
+  { name: '麻坡', country: '馬來西亞', lat: 2.0442, lon: 102.5689, tz: 8 },
+  { name: '亞庇', country: '馬來西亞', lat: 5.9804, lon: 116.0735, tz: 8 },
   { name: '曼谷', country: '泰國', lat: 13.7563, lon: 100.5018, tz: 7 },
   { name: '馬尼拉', country: '菲律賓', lat: 14.5995, lon: 120.9842, tz: 8 },
   { name: '雅加達', country: '印尼', lat: -6.2088, lon: 106.8456, tz: 7 },
+  { name: '泗水', country: '印尼', lat: -7.2575, lon: 112.7521, tz: 8 },
+  { name: '萬隆', country: '印尼', lat: -6.9175, lon: 107.6191, tz: 7 },
+  { name: '登巴薩(峇里島)', country: '印尼', lat: -8.6500, lon: 115.2167, tz: 8 },
   { name: '河內', country: '越南', lat: 21.0285, lon: 105.8542, tz: 7 },
   { name: '胡志明市', country: '越南', lat: 10.8231, lon: 106.6297, tz: 7 },
   { name: '紐約', country: '美國', lat: 40.7128, lon: -74.0060, tz: -5 },
@@ -945,7 +958,7 @@ function render(dateStr, birthInfo) {
     ascDeg = calcAscendant(y, m, d, birthInfo.hour, birthInfo.city.tz, birthInfo.city.lat, birthInfo.city.lon);
     ascSignIndex = Math.floor(ascDeg / 30);
     hasAccurateAsc = true;
-    accuracyNoteEl.textContent = '出生時間為「大概時段」估算，上升星座與宮位僅供參考，實際可能因精確時間不同而落在鄰近星座。';
+    accuracyNoteEl.textContent = '出生時間以「時辰」區間中點估算，上升星座與宮位僅供參考，實際可能因精確時間不同而落在鄰近星座（尤其接近時辰交界時誤差較大）。';
   } else {
     accuracyNoteEl.textContent = '未提供精確出生時間與地點，因此不計算上升星座；十二宮位主題改採固定對應方式呈現，仍可作為自我探索的引導素材。';
   }
